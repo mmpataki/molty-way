@@ -15,18 +15,19 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'messaging' | 'feed' | 'settings'>('dashboard');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const loadData = async () => {
+    const loadedMolties = await storage.getMolties();
+    setMolties(loadedMolties);
+    const savedId = storage.getSelectedMoltyId();
+    if (savedId && loadedMolties.some(m => m.id === savedId)) {
+      setSelectedMoltyId(savedId);
+    } else if (loadedMolties.length > 0) {
+      setSelectedMoltyId(loadedMolties[0].id);
+      storage.setSelectedMoltyId(loadedMolties[0].id);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      const loadedMolties = await storage.getMolties();
-      setMolties(loadedMolties);
-      const savedId = storage.getSelectedMoltyId();
-      if (savedId && loadedMolties.some(m => m.id === savedId)) {
-        setSelectedMoltyId(savedId);
-      } else if (loadedMolties.length > 0) {
-        setSelectedMoltyId(loadedMolties[0].id);
-        storage.setSelectedMoltyId(loadedMolties[0].id);
-      }
-    };
     loadData();
   }, []);
 
@@ -61,7 +62,7 @@ export const App: React.FC = () => {
       <main className="main-content">
         {selectedMolty ? (
           <>
-            {activeTab === 'dashboard' && <Dashboard molty={selectedMolty} />}
+            {activeTab === 'dashboard' && <Dashboard molty={selectedMolty} onUpdate={loadData} />}
             {activeTab === 'messaging' && <Messaging molty={selectedMolty} />}
             {activeTab === 'feed' && <Feed molty={selectedMolty} />}
             {activeTab === 'settings' && <LLMConfigView />}

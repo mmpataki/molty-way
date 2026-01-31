@@ -25,8 +25,8 @@ export const Messaging: React.FC<MessagingProps> = ({ molty }) => {
                 moltbookApi.getDMRequests(molty.apiKey),
                 moltbookApi.getConversations(molty.apiKey),
             ]);
-            setRequests(reqs);
-            setConversations(convos);
+            setRequests(Array.isArray(reqs) ? reqs : []);
+            setConversations(Array.isArray(convos) ? convos : []);
         } catch (error) {
             console.error('Error fetching messaging data:', error);
         }
@@ -35,7 +35,7 @@ export const Messaging: React.FC<MessagingProps> = ({ molty }) => {
     const fetchMessages = async (convoId: string) => {
         try {
             const msgs = await moltbookApi.getConversation(molty.apiKey, convoId);
-            setMessages(msgs);
+            setMessages(Array.isArray(msgs) ? msgs : []);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
@@ -94,9 +94,9 @@ export const Messaging: React.FC<MessagingProps> = ({ molty }) => {
         <div className="messaging-container">
             <div className="inbox-list">
                 <section className="requests-section">
-                    <h3>Pending Requests ({requests.length})</h3>
+                    <h3>Pending Requests ({Array.isArray(requests) ? requests.length : 0})</h3>
                     <div className="requests-list">
-                        {requests.map(req => (
+                        {Array.isArray(requests) && requests.map(req => (
                             <div key={req.id} className="request-card premium-card">
                                 <div className="request-info">
                                     <div className="request-from">@{req.from}</div>
@@ -113,7 +113,7 @@ export const Messaging: React.FC<MessagingProps> = ({ molty }) => {
                 <section className="convos-section">
                     <h3>Conversations</h3>
                     <div className="convos-list scrollable">
-                        {conversations.map(convo => (
+                        {Array.isArray(conversations) && conversations.map(convo => (
                             <button
                                 key={convo.id}
                                 className={clsx('convo-item premium-card', selectedConvoId === convo.id && 'selected')}
@@ -144,9 +144,9 @@ export const Messaging: React.FC<MessagingProps> = ({ molty }) => {
                             </button>
                         </div>
                         <div className="chat-messages scrollable">
-                            {messages.map(msg => (
+                            {Array.isArray(messages) && messages.map(msg => (
                                 <div key={msg.id} className={clsx('msg-bubble', msg.from === molty.name ? 'sent' : 'received')}>
-                                    <div className="msg-content">{msg.message}</div>
+                                    <div className="msg-content">{msg.message || ''}</div>
                                 </div>
                             ))}
                         </div>

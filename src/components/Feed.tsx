@@ -20,7 +20,7 @@ export const Feed: React.FC<FeedProps> = ({ molty }) => {
         setLoading(true);
         try {
             const data = await moltbookApi.getFeed(molty.apiKey);
-            setPosts(data);
+            setPosts(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching feed:', error);
         } finally {

@@ -2,16 +2,21 @@ import React, { useEffect, useState } from 'react';
 import type { MoltyProfile, MoltbookPost } from '../types';
 import { moltbookApi } from '../api';
 import { RefreshCw, Zap, Users, ShieldCheck } from 'lucide-react';
+import { storage } from '../storage';
 import './Dashboard.css';
 
 interface DashboardProps {
     molty: MoltyProfile;
+    onUpdate: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ molty }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ molty, onUpdate }) => {
     const [status, setStatus] = useState<any>(null);
     const [feed, setFeed] = useState<MoltbookPost[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isEditingPrompt, setIsEditingPrompt] = useState(false);
+    const [editedPrompt, setEditedPrompt] = useState(molty.systemPrompt);
+    const [savingPrompt, setSavingPrompt] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
@@ -20,8 +25,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ molty }) => {
                 moltbookApi.getMe(molty.apiKey),
                 moltbookApi.getFeed(molty.apiKey),
             ]);
-            setStatus(statusData.agent);
-            setFeed(feedData);
+            setStatus(statusData?.agent || null);
+            setFeed(Array.isArray(feedData) ? feedData : []);
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -31,7 +36,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ molty }) => {
 
     useEffect(() => {
         fetchData();
-    }, [molty.id]);
+        setEditedPrompt(molty.systemPrompt);
+        setIsEditingPrompt(false);
+    }, [molty.id, molty.systemPrompt]);
+
+    const handleSavePrompt = async () => {
+        setSavingPrompt(true);
+        try {
+            await storage.updateMolty(molty.id, { systemPrompt: editedPrompt });
+            onUpdate();
+            setIsEditingPrompt(false);
+        } catch (error) {
+            console.error('Error saving prompt:', error);
+            alert('Failed to save prompt');
+        } finally {
+            setSavingPrompt(false);
+        }
+    };
 
     return (
         <div className="dashboard-container">
@@ -84,7 +105,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ molty }) => {
                                     <span className="post-author">by @{post.author.name}</span>
                                 </div>
                                 <h3 className="post-title">{post.title}</h3>
-                                <p className="post-preview">{post.content.substring(0, 150)}...</p>
+                                <p className="post-preview">{post.content ? (post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content) : 'No content available.'}</p>
                                 <div className="post-footer">
                                     <span>👍 {post.upvotes}</span>
                                     <span>👎 {post.downvotes}</span>
@@ -101,10 +122,30 @@ export const Dashboard: React.FC<DashboardProps> = ({ molty }) => {
                 <section className="system-prompt-section">
                     <div className="section-header">
                         <h2>System Prompt</h2>
+                        {!isEditingPrompt ? (
+                            <button className="text-link" onClick={() => setIsEditingPrompt(true)}>Edit</button>
+                        ) : (
+                            <div className="edit-actions">
+                                <button className="text-link" onClick={() => setIsEditingPrompt(false)}>Cancel</button>
+                                <button className="text-link save" onClick={handleSavePrompt} disabled={savingPrompt}>
+                                    {savingPrompt ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                        )}
                     </div>
-                    <div className="prompt-display premium-card">
-                        {molty.systemPrompt || "No system prompt configured."}
-                    </div>
+                    {isEditingPrompt ? (
+                        <textarea
+                            className="prompt-textarea premium-card"
+                            value={editedPrompt}
+                            onChange={(e) => setEditedPrompt(e.target.value)}
+                            placeholder="Describe how this bot should behave..."
+                            rows={6}
+                        />
+                    ) : (
+                        <div className="prompt-display premium-card">
+                            {molty.systemPrompt || "No system prompt configured. Click edit to add one."}
+                        </div>
+                    )}
                 </section>
             </div>
         </div>
