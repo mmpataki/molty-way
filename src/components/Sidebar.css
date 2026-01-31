@@ -1,0 +1,149 @@
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+}
+
+.sidebar-header {
+    padding: 0 24px 32px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-emoji {
+    font-size: 24px;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text-primary), #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-section {
+    padding: 0 16px 24px;
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 8px;
+}
+
+.nav-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.nav-item:hover {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: var(--card-hover);
+    color: var(--text-primary);
+}
+
+.nav-item svg {
+    color: inherit;
+}
+
+.add-molty-btn {
+    color: var(--text-secondary);
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.add-molty-btn:hover {
+    background: var(--card-bg);
+    color: var(--accent-primary);
+}
+
+.molty-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.molty-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.molty-item:hover {
+    background: var(--card-bg);
+}
+
+.molty-item.selected {
+    background: var(--card-hover);
+    border: 1px solid var(--border-color);
+}
+
+.molty-avatar {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.molty-item.selected .molty-avatar {
+    color: var(--accent-primary);
+}
+
+.molty-info {
+    overflow: hidden;
+}
+
+.molty-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.molty-id {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.no-molties {
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
